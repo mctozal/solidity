@@ -109,6 +109,7 @@ mv solidity solc
 mkdir -p ./solc/deps/downloads/ 2>/dev/null || true
 wget -O ./solc/deps/downloads/jsoncpp-1.9.3.tar.gz https://github.com/open-source-parsers/jsoncpp/archive/1.9.3.tar.gz
 wget -O ./solc/deps/downloads/range-v3-0.11.0.tar.gz https://github.com/ericniebler/range-v3/archive/0.11.0.tar.gz
+wget -O ./solc/deps/nlohmann/json/json.hpp https://github.com/nlohmann/json/releases/download/v3.10.2/json.hpp
 
 # Determine version
 cd solc

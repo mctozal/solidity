@@ -35,8 +35,8 @@ BOOST_AUTO_TEST_SUITE(JsonTest, *boost::unit_test::label("nooptions"))
 
 BOOST_AUTO_TEST_CASE(json_pretty_print)
 {
-	Json::Value json;
-	Json::Value jsonChild;
+	Json json;
+	Json jsonChild;
 
 	jsonChild["3.1"] = "3.1";
 	jsonChild["3.2"] = 2;
@@ -47,21 +47,21 @@ BOOST_AUTO_TEST_CASE(json_pretty_print)
 
 	BOOST_CHECK(
 	"{\n"
-	"  \"1\": 1,\n"
-	"  \"2\": \"2\",\n"
-	"  \"3\":\n"
+	"  \"1\" : 1,\n"
+	"  \"2\" : \"2\",\n"
+	"  \"3\" : \n"
 	"  {\n"
-	"    \"3.1\": \"3.1\",\n"
-	"    \"3.2\": 2\n"
+	"    \"3.1\" : \"3.1\",\n"
+	"    \"3.2\" : 2\n"
 	"  },\n"
-	"  \"4\": \"\\u0911 \\u0912 \\u0913 \\u0914 \\u0915 \\u0916\"\n"
+	"  \"4\" : \"\\u0911 \\u0912 \\u0913 \\u0914 \\u0915 \\u0916\"\n"
 	"}" == jsonPrettyPrint(json));
 }
 
 BOOST_AUTO_TEST_CASE(json_compact_print)
 {
-	Json::Value json;
-	Json::Value jsonChild;
+	Json json;
+	Json jsonChild;
 
 	jsonChild["3.1"] = "3.1";
 	jsonChild["3.2"] = 2;
@@ -75,7 +75,7 @@ BOOST_AUTO_TEST_CASE(json_compact_print)
 
 BOOST_AUTO_TEST_CASE(parse_json_strict)
 {
-	Json::Value json;
+	Json json;
 	std::string errors;
 
 	// just parse a valid json input

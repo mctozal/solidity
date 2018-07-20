@@ -28,11 +28,10 @@
 
 #include <libsolutil/Common.h>
 #include <libsolutil/Assertions.h>
+#include <libsolutil/JSON.h>
 #include <libsolutil/Keccak256.h>
 
 #include <libsolidity/interface/OptimiserSettings.h>
-
-#include <json/json.h>
 
 #include <iostream>
 #include <sstream>
@@ -151,7 +150,7 @@ public:
 	) const;
 
 	/// Create a JSON representation of the assembly.
-	Json::Value assemblyJSON(
+	Json assemblyJSON(
 		std::map<std::string, unsigned> const& _sourceIndices = std::map<std::string, unsigned>()
 	) const;
 
@@ -170,7 +169,7 @@ protected:
 	unsigned bytesRequired(unsigned subTagSize) const;
 
 private:
-	static Json::Value createJsonValue(
+	static Json createJsonValue(
 		std::string _name,
 		int _source,
 		int _begin,
