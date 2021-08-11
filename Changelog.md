@@ -13,6 +13,7 @@ Compiler Features:
  * SMTChecker: Support low level ``call`` as external calls to unknown code.
  * SMTChecker: Add constraints to better correlate ``address(this).balance`` and ``msg.value``.
  * SMTChecker: Support the ``value`` option for external function calls.
+ * Commandline Interface: Adds alternative input mode ``--import-asm-json`` to import assembly json.
 
 
 Bugfixes:

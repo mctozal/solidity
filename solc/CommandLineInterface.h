@@ -28,6 +28,7 @@
 #include <libsolidity/interface/DebugSettings.h>
 #include <libsolidity/interface/FileReader.h>
 #include <libyul/AssemblyStack.h>
+#include <libevmasm/Assembly.h>
 
 #include <iostream>
 #include <memory>
@@ -75,6 +76,8 @@ private:
 	static std::string objectWithLinkRefsHex(evmasm::LinkerObject const& _obj);
 
 	bool assemble(yul::AssemblyStack::Language _language, yul::AssemblyStack::Machine _targetMachine);
+
+	bool assembleFromAssemblyJson();
 
 	void outputCompilationResults();
 
@@ -125,6 +128,8 @@ private:
 	FileReader m_fileReader;
 	std::optional<std::string> m_standardJsonInput;
 	std::unique_ptr<frontend::CompilerStack> m_compiler;
+	std::unique_ptr<evmasm::Assembly> m_assembly;
+	std::unique_ptr<evmasm::LinkerObject> m_linkerObject;
 	CommandLineOptions m_options;
 };
 

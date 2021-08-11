@@ -18,15 +18,17 @@
 
 #include "license.h"
 
-#include <solc/CommandLineParser.h>
-#include <libyul/optimiser/Suite.h>
 #include <liblangutil/EVMVersion.h>
+#include <libyul/optimiser/Suite.h>
+#include <solc/CommandLineParser.h>
 
 #include <boost/algorithm/string.hpp>
 
-#include <range/v3/view/transform.hpp>
-#include <range/v3/view/filter.hpp>
 #include <range/v3/range/conversion.hpp>
+#include <range/v3/view/filter.hpp>
+#include <range/v3/view/transform.hpp>
+
+#include <iostream>
 
 using namespace std;
 using namespace solidity::langutil;
@@ -35,7 +37,6 @@ namespace po = boost::program_options;
 
 namespace solidity::frontend
 {
-
 ostream& CommandLineParser::sout()
 {
 	m_hasOutput = true;
@@ -73,6 +74,7 @@ static string const g_strGeneratedSourcesRuntime = "generated-sources-runtime";
 static string const g_strGas = "gas";
 static string const g_strHelp = "help";
 static string const g_strImportAst = "import-ast";
+static string const g_strImportAssemblyJson = "import-asm-json";
 static string const g_strInputFile = "input-file";
 static string const g_strInterface = "interface";
 static string const g_strYul = "yul";
@@ -601,6 +603,11 @@ General Information)").c_str(),
 			"Supported Inputs is the output of the --" + g_strStandardJSON + " or the one produced by "
 			"--" + g_strCombinedJson + " " + g_strAst + "," + g_strCompactJSON).c_str()
 		)
+		(
+			g_strImportAssemblyJson.c_str(),
+			("Import assembly to be used, assumes input holds assembly in JSON format. "
+			"Supported Input is the output of the --" + g_strAsmJson + ".").c_str()
+		)
 	;
 	desc.add(alternativeInputModes);
 
@@ -945,6 +952,8 @@ General Information)").c_str(),
 		m_options.input.mode = InputMode::Linker;
 	else if (m_args.count(g_strImportAst) > 0)
 		m_options.input.mode = InputMode::CompilerWithASTImport;
+	else if (m_args.count(g_strImportAssemblyJson) > 0)
+		m_options.input.mode = InputMode::ImportAssemblyJson;
 	else
 		m_options.input.mode = InputMode::Compiler;
 
@@ -960,6 +969,26 @@ General Information)").c_str(),
 
 	if (!parseInputPathsAndRemappings())
 		return false;
+
+	if (m_options.input.mode == InputMode::ImportAssemblyJson)
+	{
+		std::set<string> args;
+		for (auto& arg: m_args)
+			args.insert(arg.first);
+
+		for (auto& arg: {g_strAsm, g_strImportAssemblyJson, g_strBinary, g_strOpcodes,
+				// default values
+				g_strEVMVersion, g_strInputFile, g_strJsonIndent, g_strModelCheckerContracts,
+				g_strModelCheckerEngine, g_strModelCheckerSolvers, g_strModelCheckerTargets, g_strOptimizeRuns}
+		)
+			args.erase(arg);
+
+		if (!args.empty())
+		{
+			serr() << "Invalid options for --" << g_strImportAssemblyJson << ": " << joinHumanReadable(args) << endl;
+			return false;
+		}
+	}
 
 	if (
 		m_options.input.mode != InputMode::Compiler &&
@@ -1209,7 +1238,7 @@ General Information)").c_str(),
 	if (m_options.input.mode == InputMode::Compiler)
 		m_options.input.errorRecovery = (m_args.count(g_strErrorRecovery) > 0);
 
-	solAssert(m_options.input.mode == InputMode::Compiler || m_options.input.mode == InputMode::CompilerWithASTImport, "");
+	solAssert(m_options.input.mode == InputMode::ImportAssemblyJson || m_options.input.mode == InputMode::Compiler || m_options.input.mode == InputMode::CompilerWithASTImport, "");
 	return true;
 }
 
