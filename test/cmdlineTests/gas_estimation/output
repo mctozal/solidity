@@ -1,0 +1,9 @@
+
+======= gas_estimation/input.sol:C =======
+Gas estimation:
+construction:
+   121 + 63000 = 63121
+external:
+   f():	197
+   g(uint256):	268
+   h(uint256):	312
