@@ -152,7 +152,7 @@ void FuzzerUtil::runCompiler(string const& _input, bool _quiet)
 		cout << msg << endl;
 		BOOST_THROW_EXCEPTION(std::runtime_error(std::move(msg)));
 	}
-	if (output.count("errors"))
+	if (output.contains("errors"))
 		for (auto const& error: output["errors"])
 		{
 			string invalid = findAnyOf(error["type"].get<string>(), vector<string>{

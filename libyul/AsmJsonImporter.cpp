@@ -61,7 +61,7 @@ T AsmJsonImporter::createAsmNode(Json const& _node)
 
 Json AsmJsonImporter::member(Json const& _node, string const& _name)
 {
-	if (_node.find(_name) == _node.end())
+	if (!_node.contains(_name))
 		return Json(nullptr);
 	return _node[_name];
 }
@@ -157,7 +157,7 @@ Literal AsmJsonImporter::createLiteral(Json const& _node)
 	string kind = member(_node, "kind").get<string>();
 
 	solAssert(member(_node, "hexValue").is_string() || member(_node, "value").is_string(), "");
-	if (_node.find("hexValue") != _node.end())
+	if (_node.contains("hexValue"))
 		lit.value = YulString{util::asString(util::fromHex(member(_node, "hexValue").get<string>()))};
 	else
 		lit.value = YulString{member(_node, "value").get<string>()};
@@ -215,7 +215,7 @@ Assignment AsmJsonImporter::createAssignment(Json const& _node)
 {
 	auto assignment = createAsmNode<Assignment>(_node);
 
-	if (_node.find("variableNames") != _node.end())
+	if (_node.contains("variableNames"))
 		for (auto const& var: member(_node, "variableNames"))
 			assignment.variableNames.emplace_back(createIdentifier(var));
 
@@ -256,11 +256,11 @@ FunctionDefinition AsmJsonImporter::createFunctionDefinition(Json const& _node)
 	auto funcDef = createAsmNode<FunctionDefinition>(_node);
 	funcDef.name = YulString{member(_node, "name").get<string>()};
 
-	if (_node.find("parameters") != _node.end())
+	if (_node.contains("parameters"))
 		for (auto const& var: member(_node, "parameters"))
 			funcDef.parameters.emplace_back(createTypedName(var));
 
-	if (_node.find("returnVariables") != _node.end())
+	if (_node.contains("returnVariables"))
 		for (auto const& var: member(_node, "returnVariables"))
 			funcDef.returnVariables.emplace_back(createTypedName(var));
 

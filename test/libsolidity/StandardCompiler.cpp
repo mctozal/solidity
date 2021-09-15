@@ -65,7 +65,7 @@ langutil::Error::Severity str2Severity(string const& _cat)
 /// Helper to match a specific error type and message
 bool containsError(Json const& _compilerResult, string const& _type, string const& _message)
 {
-	if (!_compilerResult.count("errors"))
+	if (!_compilerResult.contains("errors"))
 		return false;
 
 	for (auto const& error: _compilerResult["errors"])
@@ -82,7 +82,7 @@ bool containsError(Json const& _compilerResult, string const& _type, string cons
 
 bool containsAtMostWarnings(Json const& _compilerResult)
 {
-	if (!_compilerResult.count("errors"))
+	if (!_compilerResult.contains("errors"))
 		return true;
 
 	for (auto const& error: _compilerResult["errors"])
@@ -143,10 +143,10 @@ void expectLinkReferences(Json const& _contractResult, map<string, set<string>> 
 
 	for (auto const& [fileName, libraries]: _expectedLinkReferences)
 	{
-		BOOST_TEST(linkReferenceResult.count(fileName));
+		BOOST_TEST(linkReferenceResult.contains(fileName));
 		BOOST_TEST(linkReferenceResult[fileName].size() == libraries.size());
 		for (string const& libraryName: libraries)
-			BOOST_TEST(linkReferenceResult[fileName].count(libraryName));
+			BOOST_TEST(linkReferenceResult[fileName].contains(libraryName));
 	}
 }
 
@@ -522,7 +522,7 @@ BOOST_AUTO_TEST_CASE(compilation_error)
 	}
 	)";
 	Json result = compile(input);
-	BOOST_CHECK(result.count("errors"));
+	BOOST_CHECK(result.contains("errors"));
 	BOOST_CHECK(result["errors"].size() >= 1);
 	for (auto const& error: result["errors"])
 	{
@@ -1125,9 +1125,9 @@ BOOST_AUTO_TEST_CASE(optimizer_settings_default_disabled)
 	BOOST_CHECK(util::jsonParseStrict(contract["metadata"].get<string>(), metadata));
 
 	Json const& optimizer = metadata["settings"]["optimizer"];
-	BOOST_CHECK(optimizer.count("enabled"));
+	BOOST_CHECK(optimizer.contains("enabled"));
 	BOOST_CHECK(optimizer["enabled"].get<bool>() == false);
-	BOOST_CHECK(!optimizer.count("details"));
+	BOOST_CHECK(!optimizer.contains("details"));
 	BOOST_CHECK(optimizer["runs"].get<Json::number_unsigned_t>() == 200);
 }
 
@@ -1158,9 +1158,9 @@ BOOST_AUTO_TEST_CASE(optimizer_settings_default_enabled)
 	BOOST_CHECK(util::jsonParseStrict(contract["metadata"].get<string>(), metadata));
 
 	Json const& optimizer = metadata["settings"]["optimizer"];
-	BOOST_CHECK(optimizer.count("enabled"));
+	BOOST_CHECK(optimizer.contains("enabled"));
 	BOOST_CHECK(optimizer["enabled"].get<bool>() == true);
-	BOOST_CHECK(!optimizer.count("details"));
+	BOOST_CHECK(!optimizer.contains("details"));
 	BOOST_CHECK(optimizer["runs"].get<Json::number_unsigned_t>() == 200);
 }
 
@@ -1198,10 +1198,10 @@ BOOST_AUTO_TEST_CASE(optimizer_settings_details_exactly_as_default_disabled)
 	BOOST_CHECK(util::jsonParseStrict(contract["metadata"].get<string>(), metadata));
 
 	Json const& optimizer = metadata["settings"]["optimizer"];
-	BOOST_CHECK(optimizer.count("enabled"));
+	BOOST_CHECK(optimizer.contains("enabled"));
 	// enabled is switched to false instead!
 	BOOST_CHECK(optimizer["enabled"].get<bool>() == false);
-	BOOST_CHECK(!optimizer.count("details"));
+	BOOST_CHECK(!optimizer.contains("details"));
 	BOOST_CHECK(optimizer["runs"].get<Json::number_unsigned_t>() == 200);
 }
 
@@ -1241,8 +1241,8 @@ BOOST_AUTO_TEST_CASE(optimizer_settings_details_different)
 	BOOST_CHECK(util::jsonParseStrict(contract["metadata"].get<string>(), metadata));
 
 	Json const& optimizer = metadata["settings"]["optimizer"];
-	BOOST_CHECK(!optimizer.count("enabled"));
-	BOOST_CHECK(optimizer.count("details"));
+	BOOST_CHECK(!optimizer.contains("enabled"));
+	BOOST_CHECK(optimizer.contains("details"));
 	BOOST_CHECK(optimizer["details"]["constantOptimizer"].get<bool>() == true);
 	BOOST_CHECK(optimizer["details"]["cse"].get<bool>() == false);
 	BOOST_CHECK(optimizer["details"]["deduplicate"].get<bool>() == true);

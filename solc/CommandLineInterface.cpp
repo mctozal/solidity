@@ -252,8 +252,8 @@ void CommandLineInterface::handleSignatureHashes(string const& _contract)
 
 	Json methodIdentifiers = m_compiler->methodIdentifiers(_contract);
 	string out;
-	for (auto const& name: methodIdentifiers.items())
-		out += methodIdentifiers[name.key()].get<string>() + ": " + name.key() + "\n";
+	for (auto const& [name, hash]: methodIdentifiers.items())
+		out += hash.get<string>() + ": " + name + "\n";
 
 	if (!m_options.output.dir.empty())
 		createFile(m_compiler->filesystemFriendlyName(_contract) + ".signatures", out);
@@ -355,13 +355,13 @@ void CommandLineInterface::handleGasEstimation(string const& _contract)
 	{
 		Json externalFunctions = estimates["external"];
 		sout() << "external:" << endl;
-		for (auto const& name: externalFunctions.items())
+		for (auto const& [name, gas]: externalFunctions.items())
 		{
-			if (name.key().empty())
+			if (name.empty())
 				sout() << "   fallback:\t";
 			else
-				sout() << "   " << name.key() << ":\t";
-			sout() << externalFunctions[name.key()].get<string>() << endl;
+				sout() << "   " << name << ":\t";
+			sout() << gas.get<string>() << endl;
 		}
 	}
 
@@ -369,10 +369,10 @@ void CommandLineInterface::handleGasEstimation(string const& _contract)
 	{
 		Json internalFunctions = estimates["internal"];
 		sout() << "internal:" << endl;
-		for (auto const& name: internalFunctions.items())
+		for (auto const& [name, gas]: internalFunctions.items())
 		{
-			sout() << "   " << name.key() << ":\t";
-			sout() << internalFunctions[name.key()].get<string>() << endl;
+			sout() << "   " << name << ":\t";
+			sout() << gas.get<string>() << endl;
 		}
 	}
 }
@@ -472,13 +472,13 @@ map<string, Json> CommandLineInterface::parseAstFromInput()
 	{
 		Json ast;
 		astAssert(jsonParseStrict(sourceCode, ast), "Input file could not be parsed to JSON");
-		astAssert(ast.find("sources") != ast.end(), "Invalid Format for import-JSON: Must have 'sources'-object");
+		astAssert(ast.contains("sources"), "Invalid Format for import-JSON: Must have 'sources'-object");
 
 		for (auto const& [src, _]: ast["sources"].items())
 		{
-			std::string astKey = ast["sources"][src].count("ast") ? "ast" : "AST";
+			std::string astKey = ast["sources"][src].contains("ast") ? "ast" : "AST";
 
-			astAssert(ast["sources"][src].count(astKey), "astkey is not member");
+			astAssert(ast["sources"][src].contains(astKey), "astkey is not member");
 			astAssert(ast["sources"][src][astKey]["nodeType"].get<string>() == "SourceUnit",  "Top-level node should be a 'SourceUnit'");
 			astAssert(sourceJsons.count(src) == 0, "All sources must have unique names");
 			sourceJsons.emplace(src, move(ast["sources"][src][astKey]));
@@ -720,7 +720,7 @@ void CommandLineInterface::handleCombinedJSON()
 	vector<string> contracts = m_compiler->contractNames();
 
 	if (!contracts.empty())
-		output[g_strContracts] = Json(Json::object());
+		output[g_strContracts] = Json::object();
 	for (string const& contractName: contracts)
 	{
 		Json& contractData = output[g_strContracts][contractName] = Json::object();
@@ -775,7 +775,7 @@ void CommandLineInterface::handleCombinedJSON()
 	if (needsSourceList)
 	{
 		// Indices into this array are used to abbreviate source names in source locations.
-		output[g_strSourceList] = Json(Json::array());
+		output[g_strSourceList] = Json::array();
 
 		for (auto const& source: m_compiler->sourceNames())
 			output[g_strSourceList].emplace_back(source);
@@ -783,11 +783,11 @@ void CommandLineInterface::handleCombinedJSON()
 
 	if (m_options.compiler.combinedJsonRequests->ast)
 	{
-		output[g_strSources] = Json(Json::object());
+		output[g_strSources] = Json::object();
 		for (auto const& sourceCode: m_fileReader.sourceCodes())
 		{
 			ASTJsonConverter converter(m_compiler->state(), m_compiler->sourceIndices());
-			output[g_strSources][sourceCode.first] = Json(Json::object());
+			output[g_strSources][sourceCode.first] = Json::object();
 			output[g_strSources][sourceCode.first]["AST"] = converter.toJson(m_compiler->ast(sourceCode.first));
 		}
 	}
