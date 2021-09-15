@@ -43,6 +43,7 @@ BOOST_AUTO_TEST_CASE(json_pretty_print)
 	json["1"] = 1;
 	json["2"] = "2";
 	json["3"] = jsonChild;
+	json["4"] = "ऑ ऒ ओ औ क ख";
 
 	BOOST_CHECK(
 	"{\n"
@@ -52,7 +53,8 @@ BOOST_AUTO_TEST_CASE(json_pretty_print)
 	"  {\n"
 	"    \"3.1\": \"3.1\",\n"
 	"    \"3.2\": 2\n"
-	"  }\n"
+	"  },\n"
+	"  \"4\": \"\\u0911 \\u0912 \\u0913 \\u0914 \\u0915 \\u0916\"\n"
 	"}" == jsonPrettyPrint(json));
 }
 
@@ -66,8 +68,9 @@ BOOST_AUTO_TEST_CASE(json_compact_print)
 	json["1"] = 1;
 	json["2"] = "2";
 	json["3"] = jsonChild;
+	json["4"] = "ऑ ऒ ओ औ क ख";
 
-	BOOST_CHECK("{\"1\":1,\"2\":\"2\",\"3\":{\"3.1\":\"3.1\",\"3.2\":2}}" == jsonCompactPrint(json));
+	BOOST_CHECK("{\"1\":1,\"2\":\"2\",\"3\":{\"3.1\":\"3.1\",\"3.2\":2},\"4\":\"\\u0911 \\u0912 \\u0913 \\u0914 \\u0915 \\u0916\"}" == jsonCompactPrint(json));
 }
 
 BOOST_AUTO_TEST_CASE(parse_json_strict)
