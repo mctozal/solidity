@@ -848,6 +848,22 @@ BOOST_AUTO_TEST_CASE(astid_reset)
 	BOOST_CHECK(debugDataOf(result->statements.at(1))->astID == nullopt);
 }
 
+BOOST_AUTO_TEST_CASE(astid_invalid)
+{
+	ErrorList errorList;
+	ErrorReporter reporter(errorList);
+	auto const sourceText = R"(
+		/// @src -1:-1:-1 @ast-id abc @src 1:1:1
+		{}
+	)";
+	EVMDialectTyped const& dialect = EVMDialectTyped::instance(EVMVersion{});
+	shared_ptr<Block> result = parse(sourceText, dialect, reporter);
+	BOOST_REQUIRE(!!result);
+	BOOST_REQUIRE(errorList.size() == 1);
+	BOOST_TEST(errorList[0]->type() == Error::Type::SyntaxError);
+	BOOST_TEST(errorList[0]->errorId() == 1749_error);
+	CHECK_LOCATION(result->debugData->location, "", -1, -1);
+}
 
 BOOST_AUTO_TEST_CASE(customSourceLocations_multiple_src_tags_on_one_line)
 {
