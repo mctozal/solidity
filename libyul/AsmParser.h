@@ -114,6 +114,12 @@ protected:
 		langutil::SourceLocation const& _commentLocation
 	);
 
+	std::optional<std::pair<std::string_view, std::optional<int>>>
+	parseASTIDComment(
+		std::string_view _arguments,
+		langutil::SourceLocation const& _commentLocation
+	);
+
 	/// Creates a DebugData object with the correct source location set.
 	std::shared_ptr<DebugData const> createDebugData() const;
 
