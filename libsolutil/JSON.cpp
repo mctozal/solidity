@@ -83,8 +83,9 @@ string jsonCompactPrint(Json const& _input)
 
 string jsonPrint(Json const& _input, JsonFormat const& _format)
 {
-	// TODO: support the other features
-	return _input.dump((_format.format == JsonFormat::Pretty) ? static_cast<int>(_format.indent) : 0);
+	// TODO: should we turn `ensure_ascii` on? That escapes unicode with `\unnnn` sequences.
+	// NOTE: -1 here means no new lines (it is also the default setting)
+	return _input.dump((_format.format == JsonFormat::Pretty) ? static_cast<int>(_format.indent) : -1);
 }
 
 bool jsonParseStrict(string const& _input, Json& _json, string* _errs /* = nullptr */)
