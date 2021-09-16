@@ -15,7 +15,8 @@
 	{
 		"outputSelection":
 		{
-			"*": { "*": ["ir"] }
-		}
+			"*": { "*": ["ir", "irOptimized"] }
+		},
+		"optimizer": { "enabled": true }
 	}
 }
