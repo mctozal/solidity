@@ -237,16 +237,17 @@ optional<pair<string_view, optional<int>>> Parser::parseASTIDComment(
 )
 {
 	static regex const argRegex = regex(
-		R"~~(^(\d+))~~",
+		R"~~(^(\d+)(?:\s|$))~~",
 		regex_constants::ECMAScript | regex_constants::optimize
 	);
 	match_results<string_view::const_iterator> match;
 	optional<int> astID;
 	bool matched = regex_search(_arguments.cbegin(), _arguments.cend(), match, argRegex);
+	string_view tail = _arguments;
 	if (matched)
 	{
 		solAssert(match.size() == 2, "");
-		_arguments = _arguments.substr(static_cast<size_t>(match.position() + match.length()));
+		tail = _arguments.substr(static_cast<size_t>(match.position() + match.length()));
 
 		astID = toInt(match[1].str());
 	}

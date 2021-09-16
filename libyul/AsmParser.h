@@ -108,14 +108,12 @@ protected:
 
 	void fetchDebugDataFromComment();
 
-	std::optional<std::pair<std::string_view, langutil::SourceLocation>>
-	parseSrcComment(
+	std::optional<std::pair<std::string_view, langutil::SourceLocation>>parseSrcComment(
 		std::string_view _arguments,
 		langutil::SourceLocation const& _commentLocation
 	);
 
-	std::optional<std::pair<std::string_view, std::optional<int>>>
-	parseASTIDComment(
+	std::optional<std::pair<std::string_view, std::optional<int>>>parseASTIDComment(
 		std::string_view _arguments,
 		langutil::SourceLocation const& _commentLocation
 	);
