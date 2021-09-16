@@ -52,7 +52,7 @@ struct DebugData
 	}
 
 	langutil::SourceLocation location;
-	/// ID in the source AST.
+	/// ID in the (Solidity) source AST.
 	std::optional<int64_t> astID;
 };
 
